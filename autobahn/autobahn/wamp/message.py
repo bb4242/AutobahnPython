@@ -2011,7 +2011,7 @@ class Register(Message):
    The WAMP message code for this type of message.
    """
 
-    def __init__(self, request, procedure, pkeys=None, discloseCaller=None, discloseCallerTransport=None):
+    def __init__(self, request, procedure, pkeys=None, discloseCaller=None, discloseCallerTransport=None, **customOptions):
         """
 
         :param request: The WAMP request ID of this request.
@@ -2042,6 +2042,7 @@ class Register(Message):
         self.pkeys = pkeys
         self.discloseCaller = discloseCaller
         self.discloseCallerTransport = discloseCallerTransport
+        self.customOptions = customOptions
 
     @staticmethod
     def parse(wmsg):
@@ -2095,8 +2096,13 @@ class Register(Message):
                 raise ProtocolError("invalid type {0} for 'disclose_caller_transport' option in REGISTER".format(type(option_discloseCallerTransport)))
 
             discloseCallerTransport = option_discloseCallerTransport
+        
+        customOptions = options
+        del customOptions[u'pkeys']
+        del customOptions[u'disclose_caller']
+        del customOptions[u'disclose_caller_transport']
 
-        obj = Register(request, procedure, pkeys=pkeys, discloseCaller=discloseCaller, discloseCallerTransport=discloseCallerTransport)
+        obj = Register(request, procedure, pkeys=pkeys, discloseCaller=discloseCaller, discloseCallerTransport=discloseCallerTransport, **customOptions)
 
         return obj
 
@@ -2104,7 +2110,7 @@ class Register(Message):
         """
         Implements :func:`autobahn.wamp.interfaces.IMessage.marshal`
         """
-        options = {}
+        options = self.customOptions
 
         if self.pkeys is not None:
             options[u'pkeys'] = self.pkeys

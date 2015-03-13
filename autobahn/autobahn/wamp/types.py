@@ -345,7 +345,7 @@ class RegisterOptions:
     :func:`autobahn.wamp.interfaces.ICallee.register`.
     """
 
-    def __init__(self, details_arg=None, pkeys=None, discloseCaller=None, discloseCallerTransport=None):
+    def __init__(self, details_arg=None, pkeys=None, discloseCaller=None, discloseCallerTransport=None, **customOptions):
         """
 
         :param details_arg: When invoking the endpoint, provide call details
@@ -356,13 +356,15 @@ class RegisterOptions:
         self.pkeys = pkeys
         self.discloseCaller = discloseCaller
         self.discloseCallerTransport = discloseCallerTransport
+        self.customOptions = customOptions
 
         # options dict as sent within WAMP message
-        self.options = {
+        customOptions.update({
             'pkeys': pkeys,
             'discloseCaller': discloseCaller,
             'discloseCallerTransport': discloseCallerTransport
-        }
+        })
+        self.options = customOptions
 
     def __str__(self):
         return "RegisterOptions(details_arg = {0}, pkeys = {1}, discloseCaller = {2}, discloseCallerTransport = {3})".format(self.details_arg, self.pkeys, self.discloseCaller, self.discloseCallerTransport)
